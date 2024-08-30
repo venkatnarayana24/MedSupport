@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MantaAssistant Integration</title>
+    <!-- Embed the MantaAssistant script -->
+    <script type="module" defer crossorigin data-id="bf274a44-1c5a-44d9-97ed-4f7d01690a54" data-name="MantaAssistant" src="https://barnaclestudios.com/js/scripts/site/chat/externalassistant.js"></script>
+</head>
+<body>
+    <h1>Chat with the Assistant</h1>
+    <form id="chat-form">
+        <label for="user-input">Your message:</label>
+        <input type="text" id="user-input" name="user-input" required>
+        <button type="submit">Send</button>
+    </form>
+    <div id="response">
+        <h2>Response:</h2>
+        <p id="response-text"></p>
+    </div>
+
+    <script>
+        // Function to check if MantaAssistant is available
+        function checkMantaAssistant() {
+            return new Promise((resolve, reject) => {
+                const interval = setInterval(() => {
+                    if (window.MantaAssistant) {
+                        clearInterval(interval);
+                        resolve(window.MantaAssistant);
+                    }
+                }, 100);
+                setTimeout(() => {
+                    clearInterval(interval);
+                    reject('MantaAssistant is not available.');
+                }, 10000); // Timeout after 10 seconds
+            });
+        }
+
+        window.addEventListener('load', async () => {
+            const form = document.getElementById('chat-form');
+            const responseText = document.getElementById('response-text');
+
+            try {
+                const MantaAssistant = await checkMantaAssistant();
+                form.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+                    const userInput = document.getElementById('user-input').value;
+                    try {
+                        // Assuming MantaAssistant has a sendMessage method
+                        const response = await MantaAssistant.sendMessage(userInput);
+                        responseText.textContent = response;
+                    } catch (error) {
+                        responseText.textContent = 'Error: ' + error.message;
+                    }
+                });
+            } catch (error) {
+                responseText.textContent = 'Error: ' + error;
+            }
+        });
+    </script>
+</body>
+</html>
